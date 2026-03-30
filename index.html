@@ -3,1232 +3,430 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Siegert do Brasil — Exaustores Industriais AL-600</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700;800;900&family=Barlow:wght@300;400;500&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <title>Siegert do Brasil - Exaustores Industriais Eólicos</title>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500;600;700&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
     <script src="https://code.iconify.design/iconify-icon/1.0.8/iconify-icon.min.js"></script>
+    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        ore: { 50:'#fafaf9', 100:'#f5f5f4', 200:'#e7e5e4', 300:'#d6d3d1', 400:'#a8a29e', 500:'#78716c', 600:'#57534e', 700:'#44403c', 800:'#292524', 900:'#1c1917', 950:'#0c0a09' },
-                        heat: { 400:'#fb923c', 500:'#f97316', 600:'#ea580c', 700:'#c2410c' },
-                        acid: { 400:'#a3e635', 500:'#84cc16', 600:'#65a30d' }
+                        steel: { 50:'#f8fafc', 100:'#f1f5f9', 200:'#e2e8f0', 300:'#cbd5e1', 400:'#94a3b8', 500:'#64748b', 600:'#475569', 800:'#1e293b', 900:'#0f172a' },
+                        blue: { 500:'#3b82f6', 600:'#2563eb', 700:'#1d4ed8' }
                     },
-                    fontFamily: {
-                        condensed: ['"Barlow Condensed"', 'sans-serif'],
-                        body: ['Barlow', 'sans-serif'],
-                        mono: ['"Courier Prime"', 'monospace']
-                    }
+                    fontFamily: { sans:['Inter','sans-serif'], display:['"IBM Plex Sans"','sans-serif'], mono:['"Space Mono"','monospace'] }
                 }
             }
         }
     </script>
 
     <style>
-        :root {
-            --bg: #0c0a09;
-            --surface: #1c1917;
-            --border: rgba(255,255,255,0.08);
-            --text: #f5f5f4;
-            --muted: #78716c;
-            --heat: #ea580c;
-            --acid: #84cc16;
-        }
-
-        *, *::before, *::after { box-sizing: border-box; }
-
-        html { background: var(--bg); }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'Barlow', sans-serif;
-            overflow-x: hidden;
-            cursor: none;
-        }
-
-        /* ——— CUSTOM CURSOR ——— */
-        #cursor {
-            position: fixed;
-            width: 12px; height: 12px;
-            background: var(--heat);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: width 0.2s, height 0.2s, background 0.2s;
-            mix-blend-mode: difference;
-        }
-        #cursor-ring {
-            position: fixed;
-            width: 40px; height: 40px;
-            border: 1px solid rgba(234,88,12,0.5);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9998;
-            transform: translate(-50%, -50%);
-            transition: all 0.12s ease;
-        }
-        body:hover #cursor { opacity: 1; }
-
-        /* ——— NOISE TEXTURE OVERLAY ——— */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: 1000;
-            pointer-events: none;
-            opacity: 0.035;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-            background-size: 200px 200px;
-        }
-
-        /* ——— SCANLINES ——— */
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            z-index: 999;
-            pointer-events: none;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0,0,0,0.03) 2px,
-                rgba(0,0,0,0.03) 4px
-            );
-        }
-
-        /* ——— NAVBAR ——— */
-        #navbar {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: 72px;
-            z-index: 500;
-            display: flex;
-            align-items: center;
-            padding: 0 5%;
-            border-bottom: 1px solid var(--border);
-            background: rgba(12,10,9,0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-        .nav-link {
-            font-family: 'Courier Prime', monospace;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.18em;
-            color: var(--muted);
-            transition: color 0.3s;
-            position: relative;
-        }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -3px; left: 0; right: 0;
-            height: 1px;
-            background: var(--heat);
-            transform: scaleX(0);
-            transition: transform 0.3s;
-        }
-        .nav-link:hover { color: var(--text); }
-        .nav-link:hover::after { transform: scaleX(1); }
-
-        .btn-primary {
-            font-family: 'Courier Prime', monospace;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            background: var(--heat);
-            color: white;
-            padding: 12px 28px;
-            border: none;
-            cursor: none;
-            position: relative;
-            overflow: hidden;
-            transition: background 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: rgba(255,255,255,0.1);
-            transform: translateX(-100%);
-            transition: transform 0.4s;
-        }
-        .btn-primary:hover::before { transform: translateX(0); }
-
-        .btn-outline {
-            font-family: 'Courier Prime', monospace;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            background: transparent;
-            color: var(--text);
-            padding: 12px 28px;
-            border: 1px solid var(--border);
-            cursor: none;
-            transition: border-color 0.3s, color 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .btn-outline:hover { border-color: var(--heat); color: var(--heat); }
-
-        /* ——— HERO ——— */
-        #hero {
-            min-height: 100vh;
-            display: grid;
-            grid-template-columns: 1fr;
-            position: relative;
-            padding-top: 72px;
-            overflow: hidden;
-        }
-
-        /* Animated background gradient */
-        .hero-bg {
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(ellipse 60% 60% at 70% 50%, rgba(234,88,12,0.12) 0%, transparent 70%),
-                radial-gradient(ellipse 40% 40% at 20% 80%, rgba(234,88,12,0.06) 0%, transparent 60%),
-                var(--bg);
-            animation: hero-pulse 8s ease-in-out infinite;
-        }
-        @keyframes hero-pulse {
-            0%,100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        /* Grid lines */
-        .hero-grid {
-            position: absolute;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-        }
-
-        /* Diagonal accent stripe */
-        .hero-stripe {
-            position: absolute;
-            top: 0; bottom: 0;
-            right: 35%;
-            width: 1px;
-            background: linear-gradient(180deg, transparent, var(--heat), transparent);
-            opacity: 0.4;
-        }
-
-        .hero-tag {
-            font-family: 'Courier Prime', monospace;
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            color: var(--heat);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .hero-tag::before {
-            content: '';
-            width: 24px;
-            height: 1px;
-            background: var(--heat);
-        }
-
-        .hero-h1 {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 900;
-            font-size: clamp(5rem, 13vw, 11rem);
-            line-height: 0.92;
-            letter-spacing: -0.02em;
-            text-transform: uppercase;
-            color: var(--text);
-        }
-        .hero-h1 .accent { color: var(--heat); }
-        .hero-h1 .ghost {
-            -webkit-text-stroke: 1px rgba(255,255,255,0.15);
-            color: transparent;
-        }
-
-        .hero-stat {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .hero-stat-num {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 700;
-            font-size: 2.5rem;
-            letter-spacing: -0.02em;
-            color: var(--text);
-            line-height: 1;
-        }
-        .hero-stat-label {
-            font-family: 'Courier Prime', monospace;
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--muted);
-        }
-
-        /* Product image container */
-        .product-ring {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .product-ring::before {
-            content: '';
-            position: absolute;
-            width: 450px; height: 450px;
-            border: 1px solid rgba(234,88,12,0.2);
-            border-radius: 50%;
-            animation: ring-rotate 20s linear infinite;
-        }
-        .product-ring::after {
-            content: '';
-            position: absolute;
-            width: 350px; height: 350px;
-            border: 1px dashed rgba(234,88,12,0.1);
-            border-radius: 50%;
-            animation: ring-rotate 15s linear infinite reverse;
-        }
-        @keyframes ring-rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .product-img-wrap {
-            position: relative;
-            z-index: 2;
-            animation: float 5s ease-in-out infinite;
-            filter: drop-shadow(0 30px 60px rgba(234,88,12,0.25));
-        }
-        @keyframes float {
-            0%,100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-18px) rotate(1deg); }
-        }
-
-        /* Ticker / Specs bar */
-        .specs-bar {
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
-            background: rgba(28,25,23,0.8);
-            overflow: hidden;
-            white-space: nowrap;
-        }
-        .specs-ticker {
-            display: inline-flex;
-            animation: ticker 30s linear infinite;
-            gap: 0;
-        }
-        @keyframes ticker {
-            from { transform: translateX(0); }
-            to { transform: translateX(-50%); }
-        }
-        .spec-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 16px;
-            padding: 14px 40px;
-            border-right: 1px solid var(--border);
-            font-family: 'Courier Prime', monospace;
-            font-size: 11px;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: var(--muted);
-        }
-        .spec-item .dot { width: 4px; height: 4px; background: var(--heat); border-radius: 50%; flex-shrink: 0; }
-        .spec-item strong { color: var(--text); }
-
-        /* ——— SECTION HEADERS ——— */
-        .section-index {
-            font-family: 'Courier Prime', monospace;
-            font-size: 10px;
-            color: var(--muted);
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-        }
-        .section-title {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 800;
-            font-size: clamp(3rem, 7vw, 6rem);
-            line-height: 0.95;
-            letter-spacing: -0.02em;
-            text-transform: uppercase;
-        }
-
-        /* ——— APPLICATIONS GRID ——— */
-        .app-card {
-            position: relative;
-            overflow: hidden;
-            cursor: none;
-            group: true;
-        }
-        .app-card img {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            filter: grayscale(100%) brightness(0.4);
-            transition: filter 0.6s ease, transform 0.8s ease;
-        }
-        .app-card:hover img {
-            filter: grayscale(30%) brightness(0.5);
-            transform: scale(1.08);
-        }
-        .app-card-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(12,10,9,0.95) 0%, transparent 60%);
-        }
-        .app-card-content {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            padding: 2rem;
-        }
-        .app-card-icon {
-            font-size: 2rem;
-            color: var(--heat);
-            margin-bottom: 0.75rem;
-            display: block;
-            transition: transform 0.4s;
-        }
-        .app-card:hover .app-card-icon { transform: translateY(-8px); }
-        .app-card-title {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 700;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: white;
-        }
-        .app-card-num {
-            font-family: 'Courier Prime', monospace;
-            font-size: 9px;
-            color: var(--muted);
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Border accent on hover */
-        .app-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 2px;
-            background: var(--heat);
-            transform: scaleX(0);
-            transition: transform 0.4s;
-        }
-        .app-card:hover::after { transform: scaleX(1); }
-
-        /* ——— FEATURES SECTION ——— */
-        .feature-row {
-            display: grid;
-            grid-template-columns: 60px 1fr auto;
-            gap: 2rem;
-            align-items: start;
-            padding: 2.5rem 0;
-            border-top: 1px solid var(--border);
-            transition: all 0.3s;
-        }
-        .feature-row:hover { background: rgba(255,255,255,0.02); padding-left: 1rem; padding-right: 1rem; }
-        .feature-num {
-            font-family: 'Courier Prime', monospace;
-            font-size: 11px;
-            color: var(--heat);
-            letter-spacing: 0.1em;
-        }
-        .feature-title {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 700;
-            font-size: 1.6rem;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            margin-bottom: 0.5rem;
-        }
-        .feature-desc {
-            font-size: 0.9rem;
-            color: var(--muted);
-            line-height: 1.7;
-            max-width: 540px;
-        }
-        .feature-badge {
-            font-family: 'Courier Prime', monospace;
-            font-size: 9px;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--acid);
-            border: 1px solid rgba(132,204,22,0.3);
-            padding: 4px 10px;
-            white-space: nowrap;
-            align-self: start;
-        }
-
-        /* ——— DARK CTA SECTION ——— */
-        #cta {
-            position: relative;
-            overflow: hidden;
-            background: var(--surface);
-        }
-        .cta-bg-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 900;
-            font-size: clamp(8rem, 20vw, 22rem);
-            text-transform: uppercase;
-            color: transparent;
-            -webkit-text-stroke: 1px rgba(255,255,255,0.04);
-            white-space: nowrap;
-            pointer-events: none;
-            user-select: none;
-            letter-spacing: -0.04em;
-        }
-
-        /* ——— CLIENTS MARQUEE ——— */
-        .marquee-track {
-            display: flex;
-            gap: 0;
-        }
-        .marquee-list {
-            display: flex;
-            align-items: center;
-            gap: 0;
-            flex-shrink: 0;
-            animation: marquee-left 35s linear infinite;
-        }
-        @keyframes marquee-left {
-            from { transform: translateX(0); }
-            to { transform: translateX(-100%); }
-        }
-        .client-logo {
-            padding: 0 48px;
-            border-right: 1px solid var(--border);
-            height: 80px;
-            display: flex;
-            align-items: center;
-        }
-        .client-logo img {
-            height: 36px;
-            object-fit: contain;
-            filter: grayscale(100%) brightness(0.4);
-            transition: filter 0.4s;
-        }
-        .client-logo:hover img {
-            filter: grayscale(0%) brightness(1);
-        }
-
-        /* ——— ABOUT ——— */
-        .stat-big {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 900;
-            font-size: clamp(4rem, 8vw, 7rem);
-            line-height: 1;
-            letter-spacing: -0.03em;
-            color: var(--text);
-        }
-        .stat-big span { color: var(--heat); }
-
-        /* ——— FOOTER ——— */
-        footer {
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-        }
-
-        /* ——— SCROLL ANIMATIONS ——— */
-        .fade-up {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1);
-        }
-        .fade-up.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* ——— PROGRESS BAR ——— */
-        #progress-bar {
-            position: fixed;
-            top: 72px; left: 0;
-            height: 2px;
-            background: var(--heat);
-            z-index: 600;
-            transform-origin: left;
-            transform: scaleX(0);
-            transition: transform 0.1s linear;
-        }
-
-        /* ——— MOBILE NAV TOGGLE ——— */
-        .mobile-menu {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(12,10,9,0.98);
-            z-index: 490;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 3rem;
-        }
-        .mobile-menu.open { display: flex; }
-        .mobile-link {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 700;
-            font-size: 3rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text);
-            transition: color 0.3s;
-        }
-        .mobile-link:hover { color: var(--heat); }
-
-        /* ——— DIVIDERS ——— */
-        .section-divider {
-            border: none;
-            border-top: 1px solid var(--border);
-        }
-
-        /* Glitch effect for hero */
-        @keyframes glitch {
-            0%,100% { clip-path: inset(50% 0 50% 0); transform: translateX(0); }
-            20% { clip-path: inset(20% 0 60% 0); transform: translateX(-4px); }
-            40% { clip-path: inset(70% 0 10% 0); transform: translateX(4px); }
-            60% { clip-path: inset(30% 0 30% 0); transform: translateX(-2px); }
-            80% { clip-path: inset(60% 0 20% 0); transform: translateX(2px); }
-        }
-
-        /* Loading animation */
-        #loader {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            z-index: 9000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 2rem;
-        }
-        .loader-text {
-            font-family: 'Courier Prime', monospace;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.3em;
-            color: var(--muted);
-        }
-        .loader-bar-wrap {
-            width: 200px;
-            height: 1px;
-            background: rgba(255,255,255,0.1);
-        }
-        .loader-bar {
-            height: 100%;
-            background: var(--heat);
-            animation: load-fill 1.6s cubic-bezier(0.4,0,0.2,1) forwards;
-            transform-origin: left;
-        }
-        @keyframes load-fill {
-            from { transform: scaleX(0); }
-            to { transform: scaleX(1); }
-        }
-        .loader-logo {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 900;
-            font-size: 3rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--text);
-        }
-        .loader-logo span { color: var(--heat); }
+        body { background-color: #f8fafc; color: #0f172a; overflow-x: hidden; }
+        .grid-bg { position: fixed; inset: 0; z-index: -1; pointer-events: none; background-image: linear-gradient(to right, rgba(15, 23, 42, 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgba(15, 23, 42, 0.05) 1px, transparent 1px); background-size: 80px 80px; }
+        .guide-v { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(15, 23, 42, 0.1); z-index: -1; }
+        @keyframes beam-v { 0% { top: -200px; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        .beam-v { position: absolute; width: 1px; height: 150px; background: linear-gradient(180deg, transparent, #2563eb, transparent); animation: beam-v 6s infinite; }
+        .text-reveal-wrap { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 4px; }
+        .text-reveal-inner { display: inline-block; transform: translateY(110%); transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .is-revealed .text-reveal-inner { transform: translateY(0); }
+        .scroll-reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .scroll-reveal.is-visible { opacity: 1; transform: translateY(0); }
+        .marquee-wrapper { display: flex; overflow: hidden; user-select: none; border-top: 1px solid rgba(15, 23, 42, 0.1); border-bottom: 1px solid rgba(15, 23, 42, 0.1); padding: 2rem 0; background: #ffffff; }
+        .marquee { flex-shrink: 0; display: flex; align-items: center; justify-content: space-around; min-width: 100%; animation: scroll-left 40s linear infinite; }
+        @keyframes scroll-left { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+        .ds-section { padding: 8rem 0; border-bottom: 1px solid rgba(15, 23, 42, 0.1); position: relative; }
+        .ds-label { font-family: 'Space Mono', monospace; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; margin-bottom: 1rem; display: block; }
+        .img-overlay { position: relative; overflow: hidden; }
+        .img-overlay::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,23,42,0.8) 0%, transparent 70%); transition: background 0.4s ease; cursor: pointer; }
+        .img-overlay:hover::after { background: linear-gradient(to top, rgba(15,23,42,0.6) 0%, transparent 50%); }
     </style>
 </head>
-
-<body>
-    <!-- Custom Cursor -->
-    <div id="cursor"></div>
-    <div id="cursor-ring"></div>
-
-    <!-- Loading Screen -->
-    <div id="loader">
-        <div class="loader-logo">SIEGERT<span>.</span></div>
-        <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
-        <div class="loader-text">Inicializando Sistema de Aeração</div>
-    </div>
-
-    <!-- Progress Bar -->
-    <div id="progress-bar"></div>
-
-    <!-- Mobile Menu -->
-    <div class="mobile-menu" id="mobileMenu">
-        <button id="mobileClose" style="position:absolute;top:24px;right:5%;font-size:2rem;color:var(--muted);background:none;border:none;cursor:none;">✕</button>
-        <a href="#hero" class="mobile-link" onclick="closeMobile()">Início</a>
-        <a href="#aplicacoes" class="mobile-link" onclick="closeMobile()">Aplicações</a>
-        <a href="#features" class="mobile-link" onclick="closeMobile()">Tecnologia</a>
-        <a href="#clientes" class="mobile-link" onclick="closeMobile()">Clientes</a>
-        <a href="#sobre" class="mobile-link" onclick="closeMobile()">Sobre</a>
-        <a href="#contato" class="mobile-link" onclick="closeMobile()">Contato</a>
+<body class="antialiased selection:bg-blue-600 selection:text-white">
+    <div class="grid-bg"></div>
+    <div class="fixed inset-0 pointer-events-none z-0">
+        <div class="guide-v" style="left: 10%"></div>
+        <div class="guide-v" style="right: 10%"><div class="beam-v" style="animation-delay: 2s;"></div></div>
+        <div class="guide-v hidden md:block" style="left: 50%"></div>
     </div>
 
     <!-- NAVBAR -->
-    <nav id="navbar">
-        <a href="#hero" style="text-decoration:none;">
-            <img src="https://siegertdobrasil.com.br/assets/1_C2_BA_20-_20LOGO_20_5BBRANCO_e5664196e192.png" alt="Siegert do Brasil" style="height:32px;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-            <span style="display:none;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.4rem;letter-spacing:0.1em;color:white;">SIEGERT</span>
-        </a>
-        <div class="hidden lg:flex items-center gap-10 ml-auto" id="desktopNav">
-            <a href="#aplicacoes" class="nav-link">Aplicações</a>
-            <a href="#features" class="nav-link">Tecnologia</a>
-            <a href="#clientes" class="nav-link">Clientes</a>
-            <a href="#sobre" class="nav-link">Sobre</a>
-            <a href="#contato" class="btn-primary ml-4">Solicitar Projeto <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
+    <nav class="fixed top-0 w-full z-50 bg-steel-50/90 backdrop-blur-md border-b border-steel-200 h-20 flex items-center px-[5%] lg:px-[10%]">
+        <div class="font-display font-bold text-steel-900 tracking-tight text-xl xl:text-2xl flex items-center gap-2">
+            <img src="https://siegertdobrasil.com.br/assets/2_C2_BA_20-_20LOGO_20_5BAZUL_2_f92b2c07ec62.png" alt="Siegert do Brasil Logo" class="h-10 object-contain" />
         </div>
-        <!-- Hamburger -->
-        <button id="mobileToggle" class="lg:hidden ml-auto" style="background:none;border:none;color:white;font-size:1.5rem;cursor:none;">
-            <iconify-icon icon="solar:hamburger-menu-linear"></iconify-icon>
-        </button>
+        <div class="ml-auto hidden lg:flex items-center gap-8 font-mono text-[11px] uppercase tracking-widest text-steel-500">
+            <a href="#hero" class="hover:text-blue-600 hover:scale-105 transition-all">Início</a>
+            <a href="#aplicacoes" class="hover:text-blue-600 hover:scale-105 transition-all">Aplicações</a>
+            <a href="#projetos" class="hover:text-blue-600 hover:scale-105 transition-all">Projetos Executados</a>
+            <a href="#clientes" class="hover:text-blue-600 hover:scale-105 transition-all">Clientes</a>
+            <a href="#sobre" class="hover:text-blue-600 hover:scale-105 transition-all">Sobre Nós</a>
+            <a href="#contato" class="bg-steel-900 text-white px-5 py-2 hover:bg-blue-600 transition-colors">CONTATO</a>
+        </div>
     </nav>
 
-    <!-- ══════════════════════════ HERO ══════════════════════════ -->
-    <section id="hero">
-        <div class="hero-bg"></div>
-        <div class="hero-grid"></div>
-        <div class="hero-stripe"></div>
+    <!-- CONTAINER PRINCIPAL -->
+    <div class="w-[90%] lg:w-[80%] mx-auto z-10 relative">
+        
+        <!-- HERO -->
+        <section id="hero" class="min-h-screen flex flex-col justify-center pt-24 pb-12 relative border-none bg-white">
+            <div class="absolute right-0 top-0 w-full lg:w-5/12 h-full bg-steel-50 border-l border-steel-200 z-0"></div>
+            <div class="absolute inset-0 z-0 opacity-[0.02]" style="background-image: linear-gradient(to right, #0f172a 1px, transparent 1px), linear-gradient(to bottom, #0f172a 1px, transparent 1px); background-size: 40px 40px;"></div>
 
-        <div class="relative z-10 w-[90%] lg:w-[80%] mx-auto flex flex-col justify-center min-h-[calc(100vh-72px)] py-20">
-            <div class="grid lg:grid-cols-12 gap-8 items-center">
-
-                <!-- LEFT: Text -->
-                <div class="lg:col-span-6 xl:col-span-5 flex flex-col gap-8">
-                    <div class="fade-up" style="transition-delay:0.2s">
-                        <span class="hero-tag">Engenharia Industrial Brasileira</span>
-                    </div>
-
-                    <div class="fade-up" style="transition-delay:0.3s">
-                        <h1 class="hero-h1">
-                            <div class="ghost">Exaustor</div>
-                            <div>AL<span class="accent">-600</span></div>
-                            <div style="font-weight:300;font-size:0.65em;letter-spacing:0.05em">DUO</div>
-                        </h1>
-                    </div>
-
-                    <p class="text-ore-400 text-lg leading-relaxed max-w-md fade-up" style="transition-delay:0.4s;font-weight:300;">
-                        Renovação contínua do ar — <strong style="color:white;font-weight:500">sem consumo de energia elétrica.</strong> Engenharia de precisão para os ambientes industriais mais severos do Brasil.
+            <div class="w-[90%] lg:w-[80%] mx-auto grid lg:grid-cols-12 gap-12 items-center h-full z-10 relative">
+                <div class="max-w-2xl relative z-10 lg:col-span-7">
+                    <span class="ds-label scroll-reveal" style="transition-delay: 0.1s">Soluções Corporativas em Aeração</span>
+                    <h1 class="font-display text-5xl md:text-6xl lg:text-[4.8rem] font-bold tracking-tighter leading-[1.05] text-steel-900 mb-8 hero-title pr-4">
+                        <span class="text-reveal-wrap"><span class="text-reveal-inner" style="transition-delay: 0.1s">EXAUSTOR</span></span><br/>
+                        <span class="text-reveal-wrap"><span class="text-reveal-inner text-steel-900" style="transition-delay: 0.2s">AL-600</span></span>
+                        <span class="text-reveal-wrap"><span class="text-reveal-inner text-blue-600" style="transition-delay: 0.3s">DUO</span></span>
+                    </h1>
+                    <p class="font-sans text-lg md:text-xl text-steel-600 leading-relaxed scroll-reveal max-w-xl" style="transition-delay: 0.5s">
+                        Engenharia focada na renovação contínua do ar, garantindo volume térmico <strong class="text-steel-900">sem consumo de energia elétrica</strong> para operações industriais extremas.
                     </p>
-
-                    <div class="flex items-center gap-6 fade-up" style="transition-delay:0.5s">
-                        <a href="#contato" class="btn-primary">Solicitar Projeto <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
-                        <a href="#features" class="btn-outline">Ver Tecnologia</a>
-                    </div>
-
-                    <!-- Mini stats -->
-                    <div class="grid grid-cols-3 gap-0 border border-[var(--border)] fade-up" style="transition-delay:0.6s">
-                        <div class="hero-stat p-5 border-r border-[var(--border)]">
-                            <span class="hero-stat-num">0<span style="color:var(--heat);font-size:1.5rem">kW</span></span>
-                            <span class="hero-stat-label">consumo elétrico</span>
-                        </div>
-                        <div class="hero-stat p-5 border-r border-[var(--border)]">
-                            <span class="hero-stat-num">20<span style="color:var(--heat);font-size:1.5rem">+</span></span>
-                            <span class="hero-stat-label">anos de vida útil</span>
-                        </div>
-                        <div class="hero-stat p-5">
-                            <span class="hero-stat-num" style="font-size:1.4rem">AL.</span>
-                            <span class="hero-stat-label">alumínio naval</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- RIGHT: Product -->
-                <div class="lg:col-span-6 xl:col-span-7 flex justify-center items-center fade-up" style="transition-delay:0.35s">
-                    <div class="product-ring">
-                        <!-- Degree markers -->
-                        <div style="position:absolute;width:490px;height:490px;pointer-events:none;">
-                            <div style="position:absolute;top:0;left:50%;transform:translateX(-50%) translateY(-14px);font-family:'Courier Prime',monospace;font-size:9px;color:rgba(234,88,12,0.5);letter-spacing:0.1em;">000°</div>
-                            <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%) translateY(14px);font-family:'Courier Prime',monospace;font-size:9px;color:rgba(234,88,12,0.5);letter-spacing:0.1em;">180°</div>
-                            <div style="position:absolute;right:0;top:50%;transform:translateY(-50%) translateX(14px);font-family:'Courier Prime',monospace;font-size:9px;color:rgba(234,88,12,0.5);letter-spacing:0.1em;">090°</div>
-                            <div style="position:absolute;left:0;top:50%;transform:translateY(-50%) translateX(-28px);font-family:'Courier Prime',monospace;font-size:9px;color:rgba(234,88,12,0.5);letter-spacing:0.1em;">270°</div>
-                        </div>
-                        <!-- Product image -->
-                        <div class="product-img-wrap">
-                            <img src="https://siegertdobrasil.com.br/assets/EXAUSTOR-AL-600-DUO-_5BRENDER__977b0dee9940.png"
-                                 alt="Exaustor AL-600 DUO"
-                                 style="width:340px;max-width:80vw;object-fit:contain;"
-                                 onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'340\' height=\'340\'><rect width=\'100%25\' height=\'100%25\' fill=\'rgba(255,255,255,0.03)\'/><text x=\'50%25\' y=\'50%25\' fill=\'rgba(234,88,12,0.5)\' font-size=\'14\' text-anchor=\'middle\' dominant-baseline=\'middle\' font-family=\'monospace\'>AL-600 DUO</text></svg>'">
-                        </div>
-
-                        <!-- Tech annotations -->
-                        <div style="position:absolute;top:15%;right:-30px;display:flex;align-items:center;gap:8px;">
-                            <div style="width:40px;height:1px;background:rgba(234,88,12,0.4);"></div>
-                            <div style="background:rgba(28,25,23,0.9);border:1px solid rgba(234,88,12,0.2);padding:6px 10px;">
-                                <div style="font-family:'Courier Prime',monospace;font-size:8px;color:var(--heat);letter-spacing:0.1em;text-transform:uppercase;">Rolamento</div>
-                                <div style="font-family:'Courier Prime',monospace;font-size:8px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;">Inviolável</div>
-                            </div>
-                        </div>
-                        <div style="position:absolute;bottom:20%;left:-30px;display:flex;align-items:center;gap:8px;flex-direction:row-reverse;">
-                            <div style="width:40px;height:1px;background:rgba(234,88,12,0.4);"></div>
-                            <div style="background:rgba(28,25,23,0.9);border:1px solid rgba(234,88,12,0.2);padding:6px 10px;text-align:right;">
-                                <div style="font-family:'Courier Prime',monospace;font-size:8px;color:var(--heat);letter-spacing:0.1em;text-transform:uppercase;">Alumínio</div>
-                                <div style="font-family:'Courier Prime',monospace;font-size:8px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;">Naval 5052</div>
+                    <div class="mt-12 flex flex-col sm:flex-row sm:items-center gap-6 md:gap-10 scroll-reveal" style="transition-delay: 0.6s">
+                        <a href="#contato" class="bg-steel-900 text-white font-mono text-xs uppercase tracking-widest px-8 py-5 hover:bg-blue-600 transition-colors shadow-sm inline-flex items-center justify-center gap-3 w-fit group">
+                            Solicitar Projeto <iconify-icon icon="solar:arrow-right-linear" class="text-lg transform group-hover:translate-x-1 transition-transform"></iconify-icon>
+                        </a>
+                        <div class="flex items-center gap-4 border-l-2 border-blue-500 pl-6 py-1">
+                            <iconify-icon icon="solar:shield-check-bold" class="text-steel-300 text-3xl"></iconify-icon>
+                            <div class="flex flex-col">
+                                <span class="font-sans font-bold text-steel-900 text-sm">Qualidade Comprovada</span>
+                                <span class="font-mono text-[10px] text-steel-500 uppercase tracking-widest mt-1">Selo ISO 9001</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <div class="relative z-10 flex flex-col items-center lg:items-end lg:col-span-5 mt-16 lg:mt-0 scroll-reveal" style="transition-delay: 0.4s">
+                    <img src="https://siegertdobrasil.com.br/assets/EXAUSTOR-AL-600-DUO-_5BRENDER__977b0dee9940.png" alt="Exaustor AL-600 Duo Eólico" class="w-full max-w-md lg:max-w-lg object-contain drop-shadow-xl hero-float mb-6">
+                    <div class="bg-white border border-steel-200 shadow-sm p-5 flex flex-col gap-3 w-full max-w-md lg:max-w-lg rounded-sm">
+                        <div class="pb-3 border-b border-steel-100 flex items-center justify-between">
+                            <span class="font-mono text-[10px] uppercase tracking-widest text-steel-500">Especificações Ativas</span>
+                            <div class="w-2 h-2 bg-emerald-500 animate-pulse rounded-full"></div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 text-center py-2">
+                            <div class="flex flex-col border-r border-steel-100 pr-4">
+                                <span class="font-sans text-[10px] text-steel-500 uppercase tracking-widest mb-1">Consumo</span>
+                                <span class="font-mono text-sm font-bold text-steel-900 border-b border-blue-500 w-fit mx-auto">0 kW/h</span>
+                            </div>
+                            <div class="flex flex-col border-r border-steel-100 px-2 lg:px-4">
+                                <span class="font-sans text-[10px] text-steel-500 uppercase tracking-widest mb-1">Duração</span>
+                                <span class="font-mono text-sm font-bold text-steel-900 border-b border-blue-500 w-fit mx-auto">> 20 Anos</span>
+                            </div>
+                            <div class="flex flex-col pl-4">
+                                <span class="font-sans text-[10px] text-steel-500 uppercase tracking-widest mb-1">Material</span>
+                                <span class="font-mono text-sm font-bold text-steel-900 border-b border-blue-500 w-fit mx-auto">Alum. Naval</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
+            
+            <div class="absolute bottom-6 right-8 font-mono text-[10px] text-steel-400 text-right hidden xl:block uppercase tracking-widest border-t border-steel-200 pt-4 z-10 w-fit"> 
+                ESTRUTURA: INDUSTRIAL <br/>SEGMENTO B2B 
+            </div>
+        </section>
 
-        <!-- Bottom corner info -->
-        <div style="position:absolute;bottom:40px;left:5%;font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);" class="hidden xl:block">
-            EST. 2000 · PELOTAS · RS · BRASIL
-        </div>
-        <div style="position:absolute;bottom:40px;right:5%;font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);text-align:right;" class="hidden xl:block">
-            MODELO: AL-600-DUO<br>REV. 2024
-        </div>
-    </section>
-
-    <!-- ══════════════════════════ SPECS TICKER ══════════════════════════ -->
-    <div class="specs-bar">
-        <div class="specs-ticker">
-            <div class="spec-item"><span class="dot"></span>Consumo <strong>0 kW/h</strong></div>
-            <div class="spec-item"><span class="dot"></span>Material <strong>Alumínio Naval</strong></div>
-            <div class="spec-item"><span class="dot"></span>Vida Útil <strong>&gt;20 Anos</strong></div>
-            <div class="spec-item"><span class="dot"></span>ISO 9001 <strong>Certificado</strong></div>
-            <div class="spec-item"><span class="dot"></span>Instalação <strong>Sem Obra Civil</strong></div>
-            <div class="spec-item"><span class="dot"></span>Manutenção <strong>Mínima</strong></div>
-            <div class="spec-item"><span class="dot"></span>Temperatura <strong>-40°C / +80°C</strong></div>
-            <div class="spec-item"><span class="dot"></span>Segmento <strong>B2B Industrial</strong></div>
-            <!-- Duplicate for infinite loop -->
-            <div class="spec-item"><span class="dot"></span>Consumo <strong>0 kW/h</strong></div>
-            <div class="spec-item"><span class="dot"></span>Material <strong>Alumínio Naval</strong></div>
-            <div class="spec-item"><span class="dot"></span>Vida Útil <strong>&gt;20 Anos</strong></div>
-            <div class="spec-item"><span class="dot"></span>ISO 9001 <strong>Certificado</strong></div>
-            <div class="spec-item"><span class="dot"></span>Instalação <strong>Sem Obra Civil</strong></div>
-            <div class="spec-item"><span class="dot"></span>Manutenção <strong>Mínima</strong></div>
-            <div class="spec-item"><span class="dot"></span>Temperatura <strong>-40°C / +80°C</strong></div>
-            <div class="spec-item"><span class="dot"></span>Segmento <strong>B2B Industrial</strong></div>
-        </div>
+        <!-- APLICAÇÕES -->
+        <section id="aplicacoes" class="ds-section">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16 scroll-reveal">
+                <div>
+                    <span class="ds-label mb-2">01 / Pilares Estruturais</span>
+                    <h2 class="font-display text-4xl md:text-5xl font-bold tracking-tight text-steel-900">Aplicações</h2>
+                </div>
+                <div class="mt-4 md:mt-0 font-mono text-[10px] tracking-widest text-steel-400 uppercase">Cases por Segmento</div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="img-overlay bg-steel-900 relative group h-96 border border-steel-200 hover:border-blue-600 transition-all cursor-pointer scroll-reveal shadow-sm flex flex-col justify-end p-6">
+                    <img src="https://siegertdobrasil.com.br/assets/Agroneg_C3_B3cio_8faa85183032.jpg" alt="Agronegócio" class="absolute inset-0 w-full h-full object-cover z-0 grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-105">
+                    <div class="relative z-10">
+                        <iconify-icon icon="solar:leaf-linear" class="text-3xl text-white mb-4 transform group-hover:-translate-y-2 transition-transform"></iconify-icon>
+                        <h4 class="font-display font-semibold text-xl text-white tracking-widest uppercase">Agro<br>Negócio</h4>
+                    </div>
+                </div>
+                <div class="img-overlay bg-steel-900 relative group h-96 border border-steel-200 hover:border-blue-600 transition-all cursor-pointer scroll-reveal shadow-sm flex flex-col justify-end p-6" style="transition-delay: 0.1s">
+                    <img src="https://siegertdobrasil.com.br/assets/Ind_C3_BAstria_254cf9320546.jpeg" alt="Indústria" class="absolute inset-0 w-full h-full object-cover z-0 grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-105">
+                    <div class="relative z-10">
+                        <iconify-icon icon="solar:factory-1-linear" class="text-3xl text-white mb-4 transform group-hover:-translate-y-2 transition-transform"></iconify-icon>
+                        <h4 class="font-display font-semibold text-xl text-white tracking-widest uppercase">Indústria</h4>
+                    </div>
+                </div>
+                <div class="img-overlay bg-steel-900 relative group h-96 border border-steel-200 hover:border-blue-600 transition-all cursor-pointer scroll-reveal shadow-sm flex flex-col justify-end p-6" style="transition-delay: 0.2s">
+                    <img src="https://siegertdobrasil.com.br/assets/Com_C3_A9rcio_95deb397d762.jpeg" alt="Comércio" class="absolute inset-0 w-full h-full object-cover z-0 grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-105">
+                    <div class="relative z-10">
+                        <iconify-icon icon="solar:shop-linear" class="text-3xl text-white mb-4 transform group-hover:-translate-y-2 transition-transform"></iconify-icon>
+                        <h4 class="font-display font-semibold text-xl text-white tracking-widest uppercase">Comércio</h4>
+                    </div>
+                </div>
+                <div class="img-overlay bg-steel-900 relative group h-96 border border-steel-200 hover:border-blue-600 transition-all cursor-pointer scroll-reveal shadow-sm flex flex-col justify-end p-6" style="transition-delay: 0.3s">
+                    <img src="https://siegertdobrasil.com.br/assets/Servi_C3_A7os_2722907bebbc.jpg" alt="Serviços" class="absolute inset-0 w-full h-full object-cover z-0 grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-105">
+                    <div class="relative z-10">
+                        <iconify-icon icon="solar:buildings-linear" class="text-3xl text-white mb-4 transform group-hover:-translate-y-2 transition-transform"></iconify-icon>
+                        <h4 class="font-display font-semibold text-xl text-white tracking-widest uppercase">Serviços</h4>
+                    </div>
+                </div>
+                <div class="img-overlay bg-steel-900 relative group h-96 border border-steel-200 hover:border-blue-600 transition-all cursor-pointer scroll-reveal shadow-sm flex flex-col justify-end p-6" style="transition-delay: 0.4s">
+                    <img src="https://siegertdobrasil.com.br/assets/Constru_C3_A7_C3_A3o_20Civil_04ed14b8f111.jpeg" alt="Construção Civil" class="absolute inset-0 w-full h-full object-cover z-0 grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-105">
+                    <div class="relative z-10">
+                        <iconify-icon icon="solar:helmet-linear" class="text-3xl text-white mb-4 transform group-hover:-translate-y-2 transition-transform"></iconify-icon>
+                        <h4 class="font-display font-semibold text-xl text-white tracking-widest uppercase">Civil</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <!-- ══════════════════════════ APPLICATIONS ══════════════════════════ -->
-    <section id="aplicacoes" style="padding:8rem 0;border-bottom:1px solid var(--border);">
+    <!-- DIFERENCIAIS -->
+    <section id="features" class="relative py-32 border-t border-steel-200 bg-steel-50">
         <div class="w-[90%] lg:w-[80%] mx-auto">
-            <div class="flex flex-col md:flex-row md:items-end justify-between mb-16">
-                <div class="fade-up">
-                    <div class="section-index mb-3">01 / Segmentos</div>
-                    <h2 class="section-title">Áreas de<br><span style="color:var(--heat)">Atuação</span></h2>
-                </div>
-                <div class="mt-6 md:mt-0 fade-up" style="transition-delay:0.1s">
-                    <p style="font-size:0.9rem;color:var(--muted);max-width:340px;line-height:1.7;">Desde silos agrícolas até centros de distribuição. A Siegert opera nos ambientes mais críticos do Brasil.</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-
-                <!-- Card 1 -->
-                <div class="app-card h-96 lg:h-[500px] fade-up" style="transition-delay:0s">
-                    <img src="https://siegertdobrasil.com.br/assets/Agroneg_C3_B3cio_8faa85183032.jpg" alt="Agronegócio">
-                    <div class="app-card-overlay"></div>
-                    <div class="app-card-content">
-                        <div class="app-card-num">001</div>
-                        <iconify-icon icon="solar:leaf-bold" class="app-card-icon"></iconify-icon>
-                        <div class="app-card-title">Agro<br>Negócio</div>
-                    </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="app-card h-96 lg:h-[500px] fade-up" style="transition-delay:0.08s">
-                    <img src="https://siegertdobrasil.com.br/assets/Ind_C3_BAstria_254cf9320546.jpeg" alt="Indústria">
-                    <div class="app-card-overlay"></div>
-                    <div class="app-card-content">
-                        <div class="app-card-num">002</div>
-                        <iconify-icon icon="solar:factory-bold" class="app-card-icon"></iconify-icon>
-                        <div class="app-card-title">Indústria</div>
-                    </div>
-                </div>
-
-                <!-- Card 3: Elevated center card -->
-                <div class="app-card h-96 lg:h-[520px] lg:-mt-5 fade-up" style="transition-delay:0.16s;border:1px solid rgba(234,88,12,0.3);">
-                    <img src="https://siegertdobrasil.com.br/assets/Com_C3_A9rcio_95deb397d762.jpeg" alt="Comércio">
-                    <div class="app-card-overlay"></div>
-                    <div class="app-card-content">
-                        <div class="app-card-num">003</div>
-                        <iconify-icon icon="solar:shop-bold" class="app-card-icon"></iconify-icon>
-                        <div class="app-card-title">Comércio</div>
-                    </div>
-                    <!-- Featured badge -->
-                    <div style="position:absolute;top:1rem;right:1rem;background:var(--heat);padding:4px 10px;font-family:'Courier Prime',monospace;font-size:8px;text-transform:uppercase;letter-spacing:0.15em;color:white;">DESTAQUE</div>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="app-card h-96 lg:h-[500px] fade-up" style="transition-delay:0.24s">
-                    <img src="https://siegertdobrasil.com.br/assets/Servi_C3_A7os_2722907bebbc.jpg" alt="Serviços">
-                    <div class="app-card-overlay"></div>
-                    <div class="app-card-content">
-                        <div class="app-card-num">004</div>
-                        <iconify-icon icon="solar:buildings-bold" class="app-card-icon"></iconify-icon>
-                        <div class="app-card-title">Serviços</div>
-                    </div>
-                </div>
-
-                <!-- Card 5 -->
-                <div class="app-card h-96 lg:h-[500px] fade-up" style="transition-delay:0.32s">
-                    <img src="https://siegertdobrasil.com.br/assets/Constru_C3_A7_C3_A3o_20Civil_04ed14b8f111.jpeg" alt="Construção Civil">
-                    <div class="app-card-overlay"></div>
-                    <div class="app-card-content">
-                        <div class="app-card-num">005</div>
-                        <iconify-icon icon="solar:helmet-bold" class="app-card-icon"></iconify-icon>
-                        <div class="app-card-title">Construção<br>Civil</div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- ══════════════════════════ TECHNOLOGY FEATURES ══════════════════════════ -->
-    <section id="features" style="padding:8rem 0;border-bottom:1px solid var(--border);">
-        <div class="w-[90%] lg:w-[80%] mx-auto">
-
             <div class="grid lg:grid-cols-12 gap-16 items-start">
-                <!-- Sticky header -->
                 <div class="lg:col-span-4 lg:sticky lg:top-28">
-                    <div class="fade-up">
-                        <div class="section-index mb-3">02 / Diferenciais</div>
-                        <h2 class="section-title mb-6">Por que<br><span style="color:var(--heat)">AL-600</span>?</h2>
-                        <p style="color:var(--muted);font-size:0.95rem;line-height:1.8;max-width:300px;">Cada detalhe foi projetado para operar décadas sem comprometer a performance.</p>
+                    <div class="scroll-reveal">
+                        <span class="ds-label mb-2">02 / Diferenciais</span>
+                        <h2 class="font-display text-4xl lg:text-5xl font-bold tracking-tighter text-steel-900 mb-6">Por que<br><span class="text-blue-600">AL-600</span>?</h2>
+                        <p class="font-sans text-steel-500 max-w-sm mb-12">Cada detalhe foi projetado para operar décadas sem comprometer a performance.</p>
                     </div>
-
-                    <!-- Product mini visual -->
-                    <div class="mt-12 fade-up" style="transition-delay:0.2s">
-                        <div style="border:1px solid var(--border);padding:2rem;position:relative;overflow:hidden;">
-                            <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(234,88,12,0.08),transparent 70%);"></div>
-                            <img src="https://siegertdobrasil.com.br/assets/EXAUSTOR-AL-600-DUO-_5BRENDER__977b0dee9940.png"
-                                 alt="AL-600"
-                                 style="width:100%;object-fit:contain;filter:drop-shadow(0 10px 30px rgba(234,88,12,0.2));"
-                                 onerror="this.style.display='none'">
-                            <div style="margin-top:1rem;text-align:center;font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.2em;color:var(--muted);">Modelo AL-600 DUO · Rev. 2024</div>
-                        </div>
+                    <div class="scroll-reveal border border-steel-200 bg-white p-8 relative overflow-hidden shadow-sm flex flex-col items-center">
+                        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(37,99,235,0.03)_0%,transparent_70%)]"></div>
+                        <img src="https://siegertdobrasil.com.br/assets/EXAUSTOR-AL-600-DUO-_5BRENDER__977b0dee9940.png" alt="AL-600 Duo" class="w-full object-contain filter drop-shadow-[0_10px_30px_rgba(37,99,235,0.15)] relative z-10" />
+                        <div class="mt-6 font-mono text-[9px] uppercase tracking-widest text-steel-500 pt-6 border-t border-steel-100 w-full text-center">Modelo AL-600 DUO · Rev. 2024</div>
                     </div>
                 </div>
-
-                <!-- Feature list -->
-                <div class="lg:col-span-8">
-                    <div class="feature-row fade-up">
-                        <div class="feature-num">01</div>
-                        <div>
-                            <div class="feature-title">Zero Consumo Energético</div>
-                            <p class="feature-desc">Movido exclusivamente pela força do vento, opera 24h/dia sem gerar nenhum custo de energia elétrica. Retorno de investimento em meses, não anos.</p>
+                <div class="lg:col-span-8 flex flex-col">
+                    <div class="group flex flex-col sm:flex-row gap-6 sm:gap-8 items-start py-8 border-t border-steel-200 hover:bg-white hover:px-6 transition-all duration-300 scroll-reveal">
+                        <div class="font-mono text-xs text-blue-600 pt-1">01</div>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl tracking-tight text-steel-900 mb-2">Zero Consumo Energético</h3>
+                            <p class="font-sans text-steel-500 text-sm leading-relaxed max-w-2xl">Movido exclusivamente pela força do vento, opera 24h/dia sem gerar nenhum custo de energia elétrica. Retorno de investimento em meses, não anos.</p>
                         </div>
-                        <div class="feature-badge">Econômico</div>
+                        <div class="font-mono text-[9px] text-blue-600 border border-blue-600/30 px-3 py-1 uppercase tracking-widest whitespace-nowrap hidden sm:block">Econômico</div>
                     </div>
-                    <div class="feature-row fade-up" style="transition-delay:0.05s">
-                        <div class="feature-num">02</div>
-                        <div>
-                            <div class="feature-title">Alumínio Naval Grau 5052</div>
-                            <p class="feature-desc">Liga especial com resistência excepcional à corrosão por umidade, salitre e agentes químicos industriais. A mesma liga usada em embarcações oceânicas.</p>
+                    <div class="group flex flex-col sm:flex-row gap-6 sm:gap-8 items-start py-8 border-t border-steel-200 hover:bg-white hover:px-6 transition-all duration-300 scroll-reveal">
+                        <div class="font-mono text-xs text-blue-600 pt-1">02</div>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl tracking-tight text-steel-900 mb-2">Alumínio Naval Grau 5052</h3>
+                            <p class="font-sans text-steel-500 text-sm leading-relaxed max-w-2xl">Liga especial com resistência excepcional à corrosão por umidade, salitre e agentes químicos industriais. A mesma liga usada em embarcações oceânicas.</p>
                         </div>
-                        <div class="feature-badge">Durabilidade</div>
+                        <div class="font-mono text-[9px] text-blue-600 border border-blue-600/30 px-3 py-1 uppercase tracking-widest whitespace-nowrap hidden sm:block">Durabilidade</div>
                     </div>
-                    <div class="feature-row fade-up" style="transition-delay:0.1s">
-                        <div class="feature-num">03</div>
-                        <div>
-                            <div class="feature-title">Rolamento Inviolável Hermético</div>
-                            <p class="feature-desc">Sistema de rolamento vedado, lubrificado em fábrica, que elimina qualquer necessidade de manutenção preventiva. Funciona em ambientes com poeira, calor extremo e vibrações.</p>
+                    <div class="group flex flex-col sm:flex-row gap-6 sm:gap-8 items-start py-8 border-t border-steel-200 hover:bg-white hover:px-6 transition-all duration-300 scroll-reveal">
+                        <div class="font-mono text-xs text-blue-600 pt-1">03</div>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl tracking-tight text-steel-900 mb-2">Rolamento Inviolável Hermético</h3>
+                            <p class="font-sans text-steel-500 text-sm leading-relaxed max-w-2xl">Sistema de rolamento vedado, lubrificado em fábrica, que elimina qualquer necessidade de manutenção preventiva. Funciona em ambientes com poeira, calor extremo e vibrações.</p>
                         </div>
-                        <div class="feature-badge">Zero Manutenção</div>
+                        <div class="font-mono text-[9px] text-blue-600 border border-blue-600/30 px-3 py-1 uppercase tracking-widest whitespace-nowrap hidden sm:block">Zero Manutenção</div>
                     </div>
-                    <div class="feature-row fade-up" style="transition-delay:0.15s">
-                        <div class="feature-num">04</div>
-                        <div>
-                            <div class="feature-title">ISO 9001 Certificado</div>
-                            <p class="feature-desc">Fabricação controlada com gestão de qualidade certificada. Cada unidade passa por inspeção dimensional, funcional e de acabamento antes do envio.</p>
+                    <div class="group flex flex-col sm:flex-row gap-6 sm:gap-8 items-start py-8 border-t border-steel-200 hover:bg-white hover:px-6 transition-all duration-300 scroll-reveal">
+                        <div class="font-mono text-xs text-blue-600 pt-1">04</div>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl tracking-tight text-steel-900 mb-2">ISO 9001 Certificado</h3>
+                            <p class="font-sans text-steel-500 text-sm leading-relaxed max-w-2xl">Fabricação controlada com gestão de qualidade certificada. Cada unidade passa por inspeção dimensional, funcional e de acabamento antes do envio.</p>
                         </div>
-                        <div class="feature-badge">Certificado</div>
+                        <div class="font-mono text-[9px] text-blue-600 border border-blue-600/30 px-3 py-1 uppercase tracking-widest whitespace-nowrap hidden sm:block">Certificado</div>
                     </div>
-                    <div class="feature-row fade-up" style="transition-delay:0.2s">
-                        <div class="feature-num">05</div>
-                        <div>
-                            <div class="feature-title">Instalação Simplificada</div>
-                            <p class="feature-desc">Montagem direta sobre telhas metálicas ou de fibrocimento sem necessidade de obra civil, estrutura adicional ou corte de telhas especiais.</p>
+                    <div class="group flex flex-col sm:flex-row gap-6 sm:gap-8 items-start py-8 border-y border-steel-200 hover:bg-white hover:px-6 transition-all duration-300 scroll-reveal">
+                        <div class="font-mono text-xs text-blue-600 pt-1">05</div>
+                        <div class="flex-1">
+                            <h3 class="font-display font-bold text-xl tracking-tight text-steel-900 mb-2">Instalação Simplificada</h3>
+                            <p class="font-sans text-steel-500 text-sm leading-relaxed max-w-2xl">Montagem direta sobre telhas metálicas ou de fibrocimento sem necessidade de obra civil, estrutura adicional ou corte de telhas especiais.</p>
                         </div>
-                        <div class="feature-badge">Plug & Play</div>
+                        <div class="font-mono text-[9px] text-blue-600 border border-blue-600/30 px-3 py-1 uppercase tracking-widest whitespace-nowrap hidden sm:block">Plug & Play</div>
                     </div>
-                    <!-- Final border -->
-                    <div style="border-top:1px solid var(--border);"></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ══════════════════════════ CTA — PROJETOS ══════════════════════════ -->
-    <section id="projetos" style="position:relative;padding:10rem 0;overflow:hidden;background:var(--surface);">
-        <div class="cta-bg-text">PROJETOS</div>
-
-        <!-- Animated diagonal lines -->
-        <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;">
-            <div style="position:absolute;top:0;left:20%;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(234,88,12,0.15),transparent);animation:beam-v 5s 0s infinite;"></div>
-            <div style="position:absolute;top:0;right:30%;width:1px;height:100%;background:linear-gradient(180deg,transparent,rgba(234,88,12,0.1),transparent);animation:beam-v 7s 2s infinite;"></div>
+    <!-- PROJETOS -->
+    <section id="projetos" class="relative py-32 bg-white text-steel-900 overflow-hidden mt-8 border-y border-steel-200">
+        <div class="absolute inset-0 z-0">
+            <img src="https://siegertdobrasil.com.br/assets/Ind_C3_BAstria_254cf9320546.jpeg" class="w-full h-full object-cover opacity-[0.15] filter grayscale" />
+            <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-white"></div>
         </div>
-        <style>@keyframes beam-v { 0%{transform:translateY(-100%);opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{transform:translateY(100%);opacity:0} }</style>
-
-        <div class="w-[90%] lg:w-[80%] mx-auto relative z-10">
-            <div class="max-w-4xl mx-auto text-center fade-up">
-                <div class="section-index mb-6 justify-center" style="display:flex;align-items:center;gap:12px;">
-                    <div style="width:40px;height:1px;background:var(--heat);"></div>
-                    Cases de Sucesso
-                    <div style="width:40px;height:1px;background:var(--heat);"></div>
-                </div>
-                <h2 class="section-title mb-8" style="font-size:clamp(3.5rem,9vw,8rem);">
-                    Projetos<br>
-                    <span style="-webkit-text-stroke:1px rgba(255,255,255,0.2);color:transparent;">Executados</span>
-                </h2>
-                <p style="font-size:1.1rem;color:var(--muted);line-height:1.8;max-width:600px;margin:0 auto 3rem;">
-                    Mais de duas décadas de instalações bem-sucedidas nos ambientes industriais mais desafiadores do território nacional.
-                </p>
-                <a href="#contato" class="btn-primary" style="margin:0 auto;font-size:12px;padding:16px 40px;">
-                    Conheça Nossos Projetos <iconify-icon icon="solar:gallery-wide-bold"></iconify-icon>
-                </a>
+        <div class="w-[90%] lg:w-[80%] mx-auto relative z-10 text-center">
+            <div class="inline-flex items-center gap-4 scroll-reveal">
+                <div class="h-px w-8 bg-blue-600"></div>
+                <span class="font-mono text-xs uppercase tracking-widest text-blue-500">CASES DE SUCESSO</span>
+                <div class="h-px w-8 bg-blue-600"></div>
             </div>
-
-            <!-- Counter strip -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-0 mt-20 border border-[var(--border)] fade-up" style="transition-delay:0.2s">
-                <div style="padding:2.5rem;border-right:1px solid var(--border);text-align:center;">
-                    <div class="stat-big"><span>500</span>+</div>
-                    <div style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.2em;color:var(--muted);margin-top:0.5rem;">Instalações</div>
+            <h2 class="font-display text-5xl md:text-7xl font-bold tracking-tighter mt-6 mb-12 scroll-reveal text-steel-900">
+                Projetos <span class="text-blue-600 font-light">Executados</span>
+            </h2>
+            <p class="font-sans text-lg text-steel-500 max-w-2xl mx-auto mb-16 scroll-reveal">
+                Nossos sistemas de ventilação natural com o AL-600 já foram implementados com sucesso nos ambientes industriais mais desafiadores do Brasil.
+            </p>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-0 mb-16 border-y border-steel-200 bg-white shadow-sm scroll-reveal">
+                <div class="p-8 lg:p-10 border-r border-b lg:border-b-0 border-steel-200 text-center flex flex-col justify-center">
+                    <div class="font-display font-bold text-5xl md:text-6xl tracking-tighter text-steel-900 stat-big"><span data-target="500">0</span><span class="text-blue-600">+</span></div>
+                    <div class="font-mono text-[9px] text-steel-500 uppercase tracking-widest mt-2">Instalações</div>
                 </div>
-                <div style="padding:2.5rem;border-right:1px solid var(--border);text-align:center;" class="hidden lg:block">
-                    <div class="stat-big"><span>20</span>+</div>
-                    <div style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.2em;color:var(--muted);margin-top:0.5rem;">Anos de Mercado</div>
+                <div class="p-8 lg:p-10 border-b lg:border-b-0 lg:border-r border-steel-200 text-center flex flex-col justify-center">
+                    <div class="font-display font-bold text-5xl md:text-6xl tracking-tighter text-steel-900 stat-big"><span data-target="20">0</span><span class="text-blue-600">+</span></div>
+                    <div class="font-mono text-[9px] text-steel-500 uppercase tracking-widest mt-2">Anos de Mercado</div>
                 </div>
-                <div style="padding:2.5rem;border-right:1px solid var(--border);text-align:center;" class="hidden lg:block">
-                    <div class="stat-big"><span>50</span>+</div>
-                    <div style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.2em;color:var(--muted);margin-top:0.5rem;">Clientes Ativos</div>
+                <div class="p-8 lg:p-10 border-r border-steel-200 text-center flex flex-col justify-center">
+                    <div class="font-display font-bold text-5xl md:text-6xl tracking-tighter text-steel-900 stat-big"><span data-target="50">0</span><span class="text-blue-600">+</span></div>
+                    <div class="font-mono text-[9px] text-steel-500 uppercase tracking-widest mt-2">Clientes Ativos</div>
                 </div>
-                <div style="padding:2.5rem;text-align:center;">
-                    <div class="stat-big"><span>0</span>kW</div>
-                    <div style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.2em;color:var(--muted);margin-top:0.5rem;">Consumo / Hora</div>
+                <div class="p-8 lg:p-10 text-center flex flex-col justify-center">
+                    <div class="font-display font-bold text-5xl md:text-6xl tracking-tighter text-steel-900 stat-big"><span data-target="0">0</span><span class="text-blue-600">kW</span></div>
+                    <div class="font-mono text-[9px] text-steel-500 uppercase tracking-widest mt-2">Consumo Elétrico</div>
                 </div>
             </div>
+            <button class="mx-auto bg-blue-600 text-white font-mono text-[11px] uppercase tracking-widest px-8 py-4 hover:bg-blue-700 transition-colors flex items-center justify-center gap-3 shadow-md hover:shadow-xl hover:shadow-blue-600/20 scroll-reveal">
+                Conheça Nossos Projetos <iconify-icon icon="solar:gallery-wide-linear" class="text-xl"></iconify-icon>
+            </button>
         </div>
     </section>
 
-    <!-- ══════════════════════════ CLIENTS ══════════════════════════ -->
-    <section id="clientes" style="padding:8rem 0;border-bottom:1px solid var(--border);">
-        <div class="w-[90%] lg:w-[80%] mx-auto mb-12">
-            <div class="flex flex-col md:flex-row md:items-end justify-between fade-up">
-                <div>
-                    <div class="section-index mb-3">03 / Parcerias</div>
-                    <h2 class="section-title" style="font-size:clamp(2.5rem,6vw,5rem);">Nossos<br><span style="color:var(--heat)">Clientes</span></h2>
-                </div>
-                <a href="#contato" class="btn-outline mt-6 md:mt-0">Ver Todos <iconify-icon icon="solar:arrow-right-linear"></iconify-icon></a>
-            </div>
-        </div>
+    <div class="w-[90%] lg:w-[80%] mx-auto z-10 relative">
 
-        <!-- Full-bleed marquee -->
-        <div style="border-top:1px solid var(--border);border-bottom:1px solid var(--border);overflow:hidden;padding:0;">
-            <div class="marquee-track">
-                <div class="marquee-list">
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_14f1730473b142b59125b6d_c8f65c4838f3.png" alt="Cliente 1"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_386dcd254cb54a239e89cf5_a33ca120b8f3.png" alt="Cliente 2"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_459029f5d4ac4ddb95c2357_3d666599978e.png" alt="Cliente 3"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_5a97bfae23984a32ae77d50_30370eb1df33.png" alt="Cliente 4"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_6f88d2ad08134cd2aa409f8_435778eddf1f.png" alt="Cliente 5"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_744a2b1d58e149b9b61b199_3dba9fe576ca.png" alt="Cliente 6"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_7761180ab6cc43d99bf4ce3_9ffac8f8aea1.png" alt="Cliente 7"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_a15c7f42ab244f9ba0f32cc_8175d926a684.png" alt="Cliente 8"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_a1e2aa152d6a4eb998fa3c7_726da3e7e557.png" alt="Cliente 9"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_a25810aba984441eaab3457_55dbfa6e23ac.png" alt="Cliente 10"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_af39b1b46d2c401b96e49f7_9afab0da7a47.png" alt="Cliente 11"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_bb7952fc31d94ccca5dc40f_d9a2c1a6dfd0.png" alt="Cliente 12"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_c0b0e7bd4ac346fa9e4f953_8b676859abac.png" alt="Cliente 13"></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_d538b3669d3d4ace9fb005a_b0c182cc5b6a.png" alt="Cliente 14"></div>
-                </div>
-                <!-- Duplicate -->
-                <div class="marquee-list" aria-hidden="true">
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_14f1730473b142b59125b6d_c8f65c4838f3.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_386dcd254cb54a239e89cf5_a33ca120b8f3.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_459029f5d4ac4ddb95c2357_3d666599978e.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_5a97bfae23984a32ae77d50_30370eb1df33.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_6f88d2ad08134cd2aa409f8_435778eddf1f.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_744a2b1d58e149b9b61b199_3dba9fe576ca.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_7761180ab6cc43d99bf4ce3_9ffac8f8aea1.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_a15c7f42ab244f9ba0f32cc_8175d926a684.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_a1e2aa152d6a4eb998fa3c7_726da3e7e557.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_a25810aba984441eaab3457_55dbfa6e23ac.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_af39b1b46d2c401b96e49f7_9afab0da7a47.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_bb7952fc31d94ccca5dc40f_d9a2c1a6dfd0.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_c0b0e7bd4ac346fa9e4f953_8b676859abac.png" alt=""></div>
-                    <div class="client-logo"><img src="https://siegertdobrasil.com.br/assets/8543e9_d538b3669d3d4ace9fb005a_b0c182cc5b6a.png" alt=""></div>
+        <!-- CLIENTES -->
+        <section id="clientes" class="ds-section border-none">
+            <div class="text-center md:text-left mb-12 scroll-reveal">
+                <span class="ds-label mb-2">03 / Parcerias de Engenharia</span>
+                <h2 class="font-display text-4xl font-bold tracking-tight text-steel-900 mb-4">Nossos Clientes</h2>
+                <p class="font-sans text-steel-600 md:text-lg">Empresas renomadas nos mais variados segmentos que atestam a eficiência da Siegert.</p>
+            </div>
+            <div class="bg-white border text-center pt-8 border-steel-200 w-screen relative left-[50%] right-[50%] -ml-[50vw] -mr-[50vw] scroll-reveal">
+                <div class="marquee-wrapper border-none pb-8 pt-0">
+                    <div class="marquee gap-16">
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_14f1730473b142b59125b6d_c8f65c4838f3.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_386dcd254cb54a239e89cf5_a33ca120b8f3.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_459029f5d4ac4ddb95c2357_3d666599978e.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_5a97bfae23984a32ae77d50_30370eb1df33.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_6f88d2ad08134cd2aa409f8_435778eddf1f.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_744a2b1d58e149b9b61b199_3dba9fe576ca.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_7761180ab6cc43d99bf4ce3_9ffac8f8aea1.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                    </div>
+                    <div class="marquee gap-16">
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_a15c7f42ab244f9ba0f32cc_8175d926a684.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_a1e2aa152d6a4eb998fa3c7_726da3e7e557.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_a25810aba984441eaab3457_55dbfa6e23ac.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_af39b1b46d2c401b96e49f7_9afab0da7a47.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_bb7952fc31d94ccca5dc40f_d9a2c1a6dfd0.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_c0b0e7bd4ac346fa9e4f953_8b676859abac.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                        <img src="https://siegertdobrasil.com.br/assets/8543e9_d538b3669d3d4ace9fb005a_b0c182cc5b6a.png" class="h-28 object-contain filter grayscale hover:grayscale-0 transition duration-300 opacity-60 hover:opacity-100" />
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+            <div class="mt-12 text-center scroll-reveal">
+                <button class="border border-steel-900 text-steel-900 font-mono text-[10px] uppercase tracking-widest px-8 py-4 hover:bg-steel-100 transition-colors inline-flex items-center gap-2 group">
+                    Conheça Todos os Clientes <iconify-icon icon="solar:arrow-right-linear" class="group-hover:translate-x-1 transition-transform"></iconify-icon>
+                </button>
+            </div>
+        </section>
 
-    <!-- ══════════════════════════ ABOUT ══════════════════════════ -->
-    <section id="sobre" style="padding:8rem 0;border-bottom:1px solid var(--border);">
-        <div class="w-[90%] lg:w-[80%] mx-auto">
-            <div class="grid lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-
-                <!-- Left: Visual -->
-                <div class="lg:col-span-5 fade-up">
-                    <div style="position:relative;aspect-ratio:1;border:1px solid var(--border);overflow:hidden;">
-                        <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(234,88,12,0.12),transparent 65%);"></div>
-                        <!-- Cross-hair lines -->
-                        <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(255,255,255,0.05);"></div>
-                        <div style="position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(255,255,255,0.05);"></div>
-                        <!-- Corner marks -->
-                        <div style="position:absolute;top:16px;left:16px;width:20px;height:20px;border-top:1px solid var(--heat);border-left:1px solid var(--heat);opacity:0.6;"></div>
-                        <div style="position:absolute;top:16px;right:16px;width:20px;height:20px;border-top:1px solid var(--heat);border-right:1px solid var(--heat);opacity:0.6;"></div>
-                        <div style="position:absolute;bottom:16px;left:16px;width:20px;height:20px;border-bottom:1px solid var(--heat);border-left:1px solid var(--heat);opacity:0.6;"></div>
-                        <div style="position:absolute;bottom:16px;right:16px;width:20px;height:20px;border-bottom:1px solid var(--heat);border-right:1px solid var(--heat);opacity:0.6;"></div>
-                        <!-- Logo centered -->
-                        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem;">
-                            <img src="https://siegertdobrasil.com.br/assets/1_C2_BA_20-_20LOGO_20_5BBRANCO_e5664196e192.png"
-                                 alt="Siegert"
-                                 style="width:70%;object-fit:contain;"
-                                 onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-                            <span style="display:none;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:3rem;letter-spacing:0.1em;color:white;">SIEGERT<br><span style='color:var(--heat)'>DO BRASIL</span></span>
-                            <div style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.3em;color:var(--muted);">Est. 2000</div>
+        <!-- SOBRE -->
+        <section id="sobre" class="ds-section pt-0">
+            <div class="bg-white border border-steel-200 overflow-hidden shadow-sm scroll-reveal">
+                <div class="grid lg:grid-cols-2">
+                    <div class="bg-steel-50 border-r border-steel-200 p-12 lg:p-16 flex flex-col items-center justify-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(15,23,42,0.03)_25%,rgba(15,23,42,0.03)_50%,transparent_50%,transparent_75%,rgba(15,23,42,0.03)_75%,rgba(15,23,42,0.03)_100%)] bg-[length:20px_20px]"></div>
+                        <img src="https://siegertdobrasil.com.br/assets/2_C2_BA_20-_20LOGO_20_5BAZUL_2_f92b2c07ec62.png" alt="Siegert Brand" class="relative z-10 w-full max-w-sm filter drop-shadow opacity-90">
+                        <div class="absolute bottom-6 left-6 flex gap-2">
+                            <div class="bg-steel-200 text-steel-700 px-2 py-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest shadow-sm">ISO 9001</div>
+                            <div class="bg-white border border-blue-500 text-blue-700 px-2 py-1 flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest shadow-sm">20+ Anos de Excelência</div>
                         </div>
                     </div>
-
-                    <!-- Badge row -->
-                    <div class="flex gap-3 mt-4">
-                        <div style="flex:1;border:1px solid var(--border);padding:12px;text-align:center;font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);">ISO 9001</div>
-                        <div style="flex:1;border:1px solid rgba(234,88,12,0.3);padding:12px;text-align:center;font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--heat);">20+ Anos</div>
-                        <div style="flex:1;border:1px solid var(--border);padding:12px;text-align:center;font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);">RS · Brasil</div>
-                    </div>
-                </div>
-
-                <!-- Right: Content -->
-                <div class="lg:col-span-7 fade-up" style="transition-delay:0.15s">
-                    <div class="section-index mb-4">04 / Nossa História</div>
-                    <h2 class="section-title mb-8" style="font-size:clamp(2.5rem,6vw,5rem);">A <span style="color:var(--heat)">Siegert</span><br>do Brasil</h2>
-
-                    <div style="border-left:2px solid var(--heat);padding-left:1.5rem;margin-bottom:2rem;">
-                        <p style="font-size:1.05rem;line-height:1.85;color:#a8a29e;">
-                            Há mais de 20 anos atuando no desenvolvimento e fabricação de produtos e máquinas especiais, a <strong style="color:white;">Siegert do Brasil</strong> destaca-se na área de aeração industrial com o exaustor eólico AL-600 — reconhecido pela extrema qualidade técnica, eficiência termodinâmica e durabilidade comprovada em campo.
+                    <div class="p-12 lg:p-16 flex flex-col justify-center">
+                        <span class="ds-label mb-4">Sobre a Empresa</span>
+                        <h2 class="font-display text-4xl font-bold tracking-tight text-steel-900 mb-6">A Siegert</h2>
+                        <p class="font-sans text-lg leading-relaxed text-steel-600 mb-8 border-l-2 border-blue-500 pl-6">
+                            Há mais de 20 anos atuando no desenvolvimento e fabricação de produtos e máquinas especiais, a <strong class="text-steel-900">Siegert do Brasil</strong> destaca-se também na área de aeração com o exaustor eólico AL-600, devido sua extrema qualidade, eficiência técnica termodinâmica e durabilidade militar em campo.
                         </p>
-                    </div>
-
-                    <p style="font-size:0.95rem;line-height:1.85;color:var(--muted);margin-bottom:3rem;">
-                        Nossa engenharia foi desenvolvida para resistir às condições mais adversas: corrosão marítima, poeira agroindustrial, calor extremo e ciclos de operação contínua. O AL-600 DUO representa o estado da arte em ventilação natural para escala industrial.
-                    </p>
-
-                    <div class="flex flex-col sm:flex-row gap-4">
-                        <a href="#contato" class="btn-primary">Falar com Engenheiro <iconify-icon icon="solar:round-alt-arrow-right-bold"></iconify-icon></a>
-                        <a href="#features" class="btn-outline">Especificações Técnicas</a>
+                        <div>
+                            <button class="bg-steel-900 text-white font-mono text-xs uppercase tracking-widest px-8 py-4 hover:bg-steel-800 transition-colors shadow-sm inline-flex items-center gap-3 group">
+                                Saiba Mais <iconify-icon icon="solar:round-alt-arrow-right-linear" class="text-lg group-hover:translate-x-1 transition-transform"></iconify-icon>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
+        </section>
+
+    </div>
+
+    <!-- CONTATO -->
+    <section id="contato" class="relative py-24 bg-steel-900 border-t border-steel-800 overflow-hidden text-steel-200 z-10 w-full">
+        <div class="absolute inset-0 z-0 pointer-events-none">
+            <img src="https://siegertdobrasil.com.br/assets/Ind_C3_BAstria_254cf9320546.jpeg" alt="Fundo Indústria" class="w-full h-full object-cover opacity-[0.08] mix-blend-overlay filter grayscale" />
+            <div class="absolute inset-0 bg-gradient-to-r from-steel-900 via-steel-900/95 to-steel-900/80"></div>
+            <div class="absolute top-0 left-0 w-1/2 h-full bg-[radial-gradient(ellipse_60%_60%_at_20%_20%,rgba(37,99,235,0.04),transparent)]"></div>
+            <div class="absolute bottom-0 right-0 w-3/4 h-full bg-[radial-gradient(ellipse_80%_80%_at_80%_80%,rgba(37,99,235,0.12),transparent)]"></div>
+            <div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:32px_32px]"></div>
         </div>
-    </section>
-
-    <!-- ══════════════════════════ CONTACT ══════════════════════════ -->
-    <section id="contato" style="padding:8rem 0;background:var(--surface);position:relative;overflow:hidden;">
-        <!-- Background accent -->
-        <div style="position:absolute;bottom:0;right:0;width:50%;height:100%;background:radial-gradient(ellipse 80% 80% at 80% 80%,rgba(234,88,12,0.06),transparent);pointer-events:none;"></div>
-
         <div class="w-[90%] lg:w-[80%] mx-auto relative z-10">
             <div class="grid lg:grid-cols-12 gap-16 items-center">
-                <!-- Left: CTA text -->
-                <div class="lg:col-span-5 fade-up">
-                    <div class="section-index mb-4">05 / Contato</div>
-                    <h2 class="section-title mb-6" style="font-size:clamp(3rem,7vw,6rem);">Vamos<br><span style="color:var(--heat)">Conversar</span></h2>
-                    <p style="color:var(--muted);font-size:1rem;line-height:1.8;max-width:360px;margin-bottom:3rem;">
-                        Fale diretamente com nossa equipe técnica. Analisamos seu projeto e elaboramos uma proposta personalizada.
-                    </p>
-
-                    <div style="display:flex;flex-direction:column;gap:1.5rem;">
-                        <a href="tel:53984377278" style="display:flex;align-items:center;gap:1rem;text-decoration:none;group:true;" class="group">
-                            <div style="width:44px;height:44px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color 0.3s,background 0.3s;" onmouseover="this.style.borderColor='var(--heat)';this.style.background='rgba(234,88,12,0.1)';" onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent';">
-                                <iconify-icon icon="solar:phone-calling-bold" style="color:var(--heat);font-size:1.1rem;"></iconify-icon>
+                <div class="lg:col-span-5 scroll-reveal">
+                    <span class="font-mono text-[9px] text-steel-500 uppercase tracking-widest block mb-4">05 / Contato</span>
+                    <h2 class="font-display font-bold text-6xl md:text-7xl tracking-tighter text-white mb-6 uppercase leading-none">Vamos<br><span class="text-blue-600">Conversar</span></h2>
+                    <p class="font-sans text-steel-400 text-sm leading-relaxed mb-12 max-w-sm">Fale diretamente com nossa equipe técnica. Analisamos seu projeto e elaboramos uma proposta personalizada.</p>
+                    <div class="flex flex-col gap-6">
+                        <a href="tel:53984377278" class="group flex items-center gap-4">
+                            <div class="w-12 h-12 border border-steel-700 flex items-center justify-center flex-shrink-0 transition-colors duration-300 group-hover:border-blue-600 group-hover:bg-blue-600/10">
+                                <iconify-icon icon="solar:phone-calling-bold" class="text-blue-600 text-xl"></iconify-icon>
                             </div>
                             <div>
-                                <div style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.15em;color:var(--muted);">Telefone / WhatsApp</div>
-                                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.2rem;letter-spacing:0.02em;color:white;">(53) 98437-7278</div>
+                                <div class="font-mono text-[9px] text-steel-500 uppercase tracking-widest mb-1">Telefone / WhatsApp</div>
+                                <div class="font-display font-bold text-lg text-white tracking-widest">(53) 98437-7278</div>
                             </div>
                         </a>
-                        <a href="tel:53999666877" style="display:flex;align-items:center;gap:1rem;text-decoration:none;">
-                            <div style="width:44px;height:44px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color 0.3s,background 0.3s;" onmouseover="this.style.borderColor='var(--heat)';this.style.background='rgba(234,88,12,0.1)';" onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent';">
-                                <iconify-icon icon="solar:phone-calling-bold" style="color:var(--heat);font-size:1.1rem;"></iconify-icon>
+                        <a href="tel:53999666877" class="group flex items-center gap-4">
+                            <div class="w-12 h-12 border border-steel-700 flex items-center justify-center flex-shrink-0 transition-colors duration-300 group-hover:border-blue-600 group-hover:bg-blue-600/10">
+                                <iconify-icon icon="solar:phone-calling-bold" class="text-blue-600 text-xl"></iconify-icon>
                             </div>
                             <div>
-                                <div style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.15em;color:var(--muted);">Comercial</div>
-                                <div style="font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:1.2rem;letter-spacing:0.02em;color:white;">(53) 99966-6877</div>
+                                <div class="font-mono text-[9px] text-steel-500 uppercase tracking-widest mb-1">Comercial</div>
+                                <div class="font-display font-bold text-lg text-white tracking-widest">(53) 99966-6877</div>
                             </div>
                         </a>
                     </div>
                 </div>
-
-                <!-- Right: Form -->
-                <div class="lg:col-span-7 fade-up" style="transition-delay:0.15s">
-                    <div style="border:1px solid var(--border);padding:3rem;background:rgba(12,10,9,0.5);">
-                        <div style="font-family:'Courier Prime',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.2em;color:var(--muted);margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border);">
-                            Formulário de Contato · AL-600
-                        </div>
-
-                        <form id="contactForm" style="display:flex;flex-direction:column;gap:1.5rem;">
-                            <div class="grid sm:grid-cols-2 gap-4">
-                                <div style="display:flex;flex-direction:column;gap:0.5rem;">
-                                    <label style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.15em;color:var(--muted);">Nome *</label>
-                                    <input type="text" placeholder="Seu nome" required
-                                           style="background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:12px 16px;color:white;font-family:'Barlow',sans-serif;font-size:0.95rem;outline:none;transition:border-color 0.3s;"
-                                           onfocus="this.style.borderColor='var(--heat)'"
-                                           onblur="this.style.borderColor='var(--border)'">
+                <div class="lg:col-span-7 scroll-reveal" style="transition-delay: 0.15s">
+                    <div class="border border-steel-800 p-8 lg:p-12 bg-[#0C0A09] relative shadow-2xl">
+                        <div class="font-mono text-[10px] uppercase tracking-widest text-steel-500 mb-8 pb-4 border-b border-steel-800">Formulário de Contato · AL-600</div>
+                        <form id="contactForm" class="flex flex-col gap-6">
+                            <div class="grid sm:grid-cols-2 gap-6">
+                                <div class="flex flex-col gap-2">
+                                    <label class="font-mono text-[9px] text-steel-500 uppercase tracking-widest">Nome *</label>
+                                    <input type="text" placeholder="Seu nome" required class="bg-transparent border border-steel-700 p-3 text-white font-sans text-sm outline-none focus:border-blue-600 transition-colors w-full rounded-none">
                                 </div>
-                                <div style="display:flex;flex-direction:column;gap:0.5rem;">
-                                    <label style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.15em;color:var(--muted);">Empresa *</label>
-                                    <input type="text" placeholder="Razão social" required
-                                           style="background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:12px 16px;color:white;font-family:'Barlow',sans-serif;font-size:0.95rem;outline:none;transition:border-color 0.3s;"
-                                           onfocus="this.style.borderColor='var(--heat)'"
-                                           onblur="this.style.borderColor='var(--border)'">
+                                <div class="flex flex-col gap-2">
+                                    <label class="font-mono text-[9px] text-steel-500 uppercase tracking-widest">Empresa *</label>
+                                    <input type="text" placeholder="Razão social" required class="bg-transparent border border-steel-700 p-3 text-white font-sans text-sm outline-none focus:border-blue-600 transition-colors w-full rounded-none">
                                 </div>
                             </div>
-                            <div style="display:flex;flex-direction:column;gap:0.5rem;">
-                                <label style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.15em;color:var(--muted);">Telefone / WhatsApp *</label>
-                                <input type="tel" placeholder="(00) 00000-0000" required
-                                       style="background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:12px 16px;color:white;font-family:'Barlow',sans-serif;font-size:0.95rem;outline:none;transition:border-color 0.3s;"
-                                       onfocus="this.style.borderColor='var(--heat)'"
-                                       onblur="this.style.borderColor='var(--border)'">
+                            <div class="grid sm:grid-cols-2 gap-6">
+                                <div class="flex flex-col gap-2">
+                                    <label class="font-mono text-[9px] text-steel-500 uppercase tracking-widest">Telefone / WhatsApp *</label>
+                                    <input type="tel" placeholder="(00) 00000-0000" required class="bg-transparent border border-steel-700 p-3 text-white font-sans text-sm outline-none focus:border-blue-600 transition-colors w-full rounded-none">
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <label class="font-mono text-[9px] text-steel-500 uppercase tracking-widest">Segmento *</label>
+                                    <select required class="bg-[#0C0A09] border border-steel-700 p-3 text-steel-400 font-sans text-sm outline-none focus:border-blue-600 transition-colors cursor-pointer appearance-none w-full rounded-none">
+                                        <option value="" disabled selected>Selecione seu segmento</option>
+                                        <option>Agronegócio</option>
+                                        <option>Indústria</option>
+                                        <option>Comércio</option>
+                                        <option>Serviços</option>
+                                        <option>Construção Civil</option>
+                                        <option>Outro</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div style="display:flex;flex-direction:column;gap:0.5rem;">
-                                <label style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.15em;color:var(--muted);">Segmento</label>
-                                <select style="background:var(--surface);border:1px solid var(--border);padding:12px 16px;color:var(--muted);font-family:'Barlow',sans-serif;font-size:0.95rem;outline:none;cursor:none;transition:border-color 0.3s;"
-                                        onfocus="this.style.borderColor='var(--heat)'"
-                                        onblur="this.style.borderColor='var(--border)'">
-                                    <option value="">Selecione seu segmento</option>
-                                    <option>Agronegócio</option>
-                                    <option>Indústria</option>
-                                    <option>Comércio</option>
-                                    <option>Serviços</option>
-                                    <option>Construção Civil</option>
-                                    <option>Outro</option>
-                                </select>
+                            <div class="flex flex-col gap-2">
+                                <label class="font-mono text-[9px] text-steel-500 uppercase tracking-widest">Mensagem</label>
+                                <textarea placeholder="Descreva brevemente o projeto ou sua necessidade..." rows="3" class="bg-transparent border border-steel-700 p-3 text-white font-sans text-sm outline-none focus:border-blue-600 transition-colors resize-y max-h-48 w-full rounded-none"></textarea>
                             </div>
-                            <div style="display:flex;flex-direction:column;gap:0.5rem;">
-                                <label style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.15em;color:var(--muted);">Mensagem</label>
-                                <textarea placeholder="Descreva brevemente o projeto ou sua necessidade..." rows="3"
-                                          style="background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:12px 16px;color:white;font-family:'Barlow',sans-serif;font-size:0.95rem;outline:none;resize:vertical;transition:border-color 0.3s;"
-                                          onfocus="this.style.borderColor='var(--heat)'"
-                                          onblur="this.style.borderColor='var(--border)'"></textarea>
-                            </div>
-                            <button type="submit" class="btn-primary" style="width:100%;justify-content:center;padding:16px;font-size:12px;">
-                                Enviar Solicitação <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>
+                            <button type="submit" id="submitBtn" class="bg-blue-600 text-white font-mono text-xs uppercase tracking-widest px-8 py-4 transition-colors hover:bg-blue-700 shadow-md flex items-center justify-center gap-3 w-full rounded-none mt-2">
+                                Enviar Solicitação <iconify-icon icon="solar:arrow-right-linear" class="text-lg"></iconify-icon>
                             </button>
                         </form>
                     </div>
@@ -1237,239 +435,110 @@
         </div>
     </section>
 
-    <!-- ══════════════════════════ FOOTER ══════════════════════════ -->
-    <footer>
-        <div class="w-[90%] lg:w-[80%] mx-auto py-16">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 pb-12 mb-8" style="border-bottom:1px solid var(--border);">
-
-                <!-- Brand -->
-                <div>
-                    <img src="https://siegertdobrasil.com.br/assets/1_C2_BA_20-_20LOGO_20_5BBRANCO_e5664196e192.png"
-                         alt="Siegert"
-                         style="height:32px;object-fit:contain;margin-bottom:1.5rem;"
-                         onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
-                    <span style="display:none;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:1.5rem;letter-spacing:0.1em;color:white;display:block;margin-bottom:1.5rem;">SIEGERT</span>
-                    <p style="font-size:0.85rem;line-height:1.8;color:var(--muted);">Engenharia de aeração industrial com mais de 20 anos de excelência.</p>
-                    <div style="display:flex;gap:8px;margin-top:1.5rem;">
-                        <a href="#" style="width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:border-color 0.3s,background 0.3s;" onmouseover="this.style.borderColor='var(--heat)';this.style.background='rgba(234,88,12,0.1)';" onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent';">
-                            <iconify-icon icon="ph:instagram-logo-fill" style="color:var(--muted);font-size:0.9rem;"></iconify-icon>
-                        </a>
-                        <a href="#" style="width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:border-color 0.3s,background 0.3s;" onmouseover="this.style.borderColor='var(--heat)';this.style.background='rgba(234,88,12,0.1)';" onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent';">
-                            <iconify-icon icon="ph:linkedin-logo-fill" style="color:var(--muted);font-size:0.9rem;"></iconify-icon>
-                        </a>
-                        <a href="#" style="width:36px;height:36px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;transition:border-color 0.3s,background 0.3s;" onmouseover="this.style.borderColor='var(--heat)';this.style.background='rgba(234,88,12,0.1)';" onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent';">
-                            <iconify-icon icon="ph:youtube-logo-fill" style="color:var(--muted);font-size:0.9rem;"></iconify-icon>
-                        </a>
+    <!-- FOOTER -->
+    <footer class="bg-[#0f172a] text-steel-300 py-16 border-t border-steel-800 relative z-10 w-full">
+        <div class="w-[90%] lg:w-[80%] mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-8 border-b border-steel-800 pb-12 mb-8">
+                <div class="md:col-span-1 border-l pl-4 border-steel-700">
+                    <img src="https://siegertdobrasil.com.br/assets/1_C2_BA_20-_20LOGO_20_5BBRANCO_e5664196e192.png" alt="Siegert" class="w-48 mb-6">
+                    <p class="font-sans text-sm leading-relaxed text-steel-400">Desenvolvimento e fabricação com precisão mecânica. Especialistas em exaustão natural para escala industrial.</p>
+                </div>
+                <div class="md:col-span-1">
+                    <h4 class="font-mono text-xs uppercase tracking-widest text-steel-500 mb-6">Navegação</h4>
+                    <ul class="space-y-4 font-sans text-sm">
+                        <li><a href="#hero" class="hover:text-blue-500 transition-colors">Início</a></li>
+                        <li><a href="#aplicacoes" class="hover:text-blue-500 transition-colors">Produtos</a></li>
+                        <li><a href="#features" class="hover:text-blue-500 transition-colors">Diferenciais</a></li>
+                        <li><a href="#projetos" class="hover:text-blue-500 transition-colors">Projetos Executados</a></li>
+                        <li><a href="#clientes" class="hover:text-blue-500 transition-colors">Nossos Clientes</a></li>
+                        <li><a href="#sobre" class="hover:text-blue-500 transition-colors">Sobre Nós</a></li>
+                        <li><a href="#contato" class="hover:text-blue-500 transition-colors">Contato</a></li>
+                    </ul>
+                </div>
+                <div class="md:col-span-1">
+                    <h4 class="font-mono text-xs uppercase tracking-widest text-steel-500 mb-6">Redes Sociais</h4>
+                    <p class="font-sans text-sm text-steel-400 mb-4">Acompanhe nossas redes sociais:</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="bg-steel-800 p-3 hover:bg-blue-600 hover:text-white transition-colors"><iconify-icon icon="logos:facebook" class="text-xl"></iconify-icon></a>
+                        <a href="#" class="bg-steel-800 p-3 hover:bg-blue-600 hover:text-white transition-colors text-steel-300"><iconify-icon icon="ph:instagram-logo-fill" class="text-xl"></iconify-icon></a>
+                        <a href="#" class="bg-steel-800 p-3 hover:bg-blue-600 hover:text-white transition-colors text-steel-300"><iconify-icon icon="ph:linkedin-logo-fill" class="text-xl"></iconify-icon></a>
+                        <a href="#" class="bg-steel-800 p-3 hover:bg-blue-600 hover:text-white transition-colors text-steel-300"><iconify-icon icon="ph:youtube-logo-fill" class="text-xl"></iconify-icon></a>
                     </div>
                 </div>
-
-                <!-- Navigation -->
-                <div>
-                    <h4 style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.2em;color:var(--muted);margin-bottom:1.5rem;">Navegação</h4>
-                    <nav style="display:flex;flex-direction:column;gap:0.75rem;">
-                        <a href="#hero" style="font-size:0.9rem;color:var(--muted);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='white';" onmouseout="this.style.color='var(--muted)';">Início</a>
-                        <a href="#aplicacoes" style="font-size:0.9rem;color:var(--muted);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='white';" onmouseout="this.style.color='var(--muted)';">Aplicações</a>
-                        <a href="#features" style="font-size:0.9rem;color:var(--muted);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='white';" onmouseout="this.style.color='var(--muted)';">Tecnologia</a>
-                        <a href="#projetos" style="font-size:0.9rem;color:var(--muted);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='white';" onmouseout="this.style.color='var(--muted)';">Projetos</a>
-                        <a href="#clientes" style="font-size:0.9rem;color:var(--muted);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='white';" onmouseout="this.style.color='var(--muted)';">Clientes</a>
-                        <a href="#sobre" style="font-size:0.9rem;color:var(--muted);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='white';" onmouseout="this.style.color='var(--muted)';">Sobre Nós</a>
-                    </nav>
-                </div>
-
-                <!-- Product -->
-                <div>
-                    <h4 style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.2em;color:var(--muted);margin-bottom:1.5rem;">Produto</h4>
-                    <nav style="display:flex;flex-direction:column;gap:0.75rem;">
-                        <a href="#features" style="font-size:0.9rem;color:var(--muted);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='white';" onmouseout="this.style.color='var(--muted)';">AL-600 DUO</a>
-                        <a href="#features" style="font-size:0.9rem;color:var(--muted);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='white';" onmouseout="this.style.color='var(--muted)';">Especificações Técnicas</a>
-                        <a href="#" style="font-size:0.9rem;color:var(--muted);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='white';" onmouseout="this.style.color='var(--muted)';">Catálogo PDF</a>
-                        <a href="#contato" style="font-size:0.9rem;color:var(--muted);text-decoration:none;transition:color 0.3s;" onmouseover="this.style.color='white';" onmouseout="this.style.color='var(--muted)';">Solicitar Orçamento</a>
-                    </nav>
-                </div>
-
-                <!-- Contact -->
-                <div>
-                    <h4 style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.2em;color:var(--muted);margin-bottom:1.5rem;">Contato</h4>
-                    <div style="display:flex;flex-direction:column;gap:1rem;">
-                        <a href="tel:53984377278" style="font-size:0.9rem;color:var(--muted);text-decoration:none;transition:color 0.3s;display:flex;align-items:center;gap:0.5rem;" onmouseover="this.style.color='var(--heat)';" onmouseout="this.style.color='var(--muted)';">
-                            <iconify-icon icon="solar:phone-calling-linear" style="color:var(--heat);"></iconify-icon> (53) 98437-7278
+                <div class="md:col-span-1">
+                    <h4 class="font-mono text-xs uppercase tracking-widest text-steel-500 mb-6">Contato</h4>
+                    <div class="space-y-4 font-sans text-sm text-steel-300">
+                        <a href="tel:53984377278" class="flex items-center gap-3 hover:text-blue-500 transition-colors">
+                            <iconify-icon icon="solar:phone-calling-linear" class="text-blue-600 text-lg"></iconify-icon> (53) 98437-7278
                         </a>
-                        <a href="tel:53999666877" style="font-size:0.9rem;color:var(--muted);text-decoration:none;transition:color 0.3s;display:flex;align-items:center;gap:0.5rem;" onmouseover="this.style.color='var(--heat)';" onmouseout="this.style.color='var(--muted)';">
-                            <iconify-icon icon="solar:phone-calling-linear" style="color:var(--heat);"></iconify-icon> (53) 99966-6877
+                        <a href="tel:53999666877" class="flex items-center gap-3 hover:text-blue-500 transition-colors">
+                            <iconify-icon icon="solar:phone-calling-linear" class="text-blue-600 text-lg"></iconify-icon> (53) 99966-6877
                         </a>
                     </div>
                 </div>
             </div>
-
-            <!-- Bottom bar -->
-            <div style="display:flex;flex-direction:column;gap:0.5rem;align-items:center;text-align:center;">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:0.5rem;">
-                    <div style="width:4px;height:4px;background:var(--heat);border-radius:50%;"></div>
-                    <span style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.2em;color:var(--muted);">Sistema Operacional</span>
-                    <div style="width:4px;height:4px;background:var(--acid);border-radius:50%;animation:pulse 2s infinite;"></div>
-                </div>
-                <span style="font-family:'Courier Prime',monospace;font-size:9px;text-transform:uppercase;letter-spacing:0.15em;color:var(--muted);">© 2024 Siegert do Brasil · Todos os direitos reservados</span>
+            <div class="flex flex-col md:flex-row justify-between items-center text-center">
+                <span class="font-mono text-[10px] uppercase tracking-widest text-steel-500">&copy; 2024 - SIEGERT - Todos os direitos reservados.</span>
+                <span class="font-mono text-[10px] uppercase tracking-widest text-steel-600 mt-4 md:mt-0">Desenvolvido com Industriatech Design System</span>
             </div>
         </div>
     </footer>
 
-    <!-- ══════════════════════════ SCRIPTS ══════════════════════════ -->
     <script>
-        // ——— LOADER ———
-        window.addEventListener('load', () => {
+        document.addEventListener("DOMContentLoaded", () => {
+            // Hero reveal
             setTimeout(() => {
-                const loader = document.getElementById('loader');
-                loader.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                loader.style.opacity = '0';
-                loader.style.transform = 'translateY(-20px)';
-                setTimeout(() => {
-                    loader.style.display = 'none';
-                    document.querySelectorAll('.fade-up').forEach(el => {
-                        observer.observe(el);
-                    });
-                    // Trigger hero elements
-                    triggerHeroReveal();
-                }, 600);
-            }, 1800);
-        });
+                const heroTitle = document.querySelector('.hero-title');
+                if (heroTitle) heroTitle.classList.add('is-revealed');
+            }, 100);
 
-        function triggerHeroReveal() {
-            document.querySelectorAll('#hero .fade-up').forEach(el => {
-                const delay = parseFloat(el.style.transitionDelay) || 0;
-                setTimeout(() => { el.classList.add('visible'); }, delay * 1000);
-            });
-        }
+            // Float animation
+            if (typeof gsap !== 'undefined') {
+                gsap.to(".hero-float", { y: -15, ease: "sine.inOut", repeat: -1, yoyo: true, duration: 4 });
+            }
 
-        // ——— CURSOR ———
-        const cursor = document.getElementById('cursor');
-        const ring = document.getElementById('cursor-ring');
-        let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+            // Intersection Observer: scroll reveals + counters
+            const obs = new IntersectionObserver((entries, observer) => {
+                entries.forEach(en => {
+                    if (en.isIntersecting) {
+                        en.target.classList.add('is-visible');
+                        // Counter animation
+                        en.target.querySelectorAll('.stat-big span[data-target]').forEach(span => {
+                            const target = parseInt(span.getAttribute('data-target'));
+                            if (target === 0) return;
+                            let current = 0;
+                            const step = Math.max(1, target / 50);
+                            const interval = setInterval(() => {
+                                current = Math.min(current + step, target);
+                                span.textContent = Math.floor(current);
+                                if (current >= target) clearInterval(interval);
+                            }, 25);
+                        });
+                        observer.unobserve(en.target);
+                    }
+                });
+            }, { threshold: 0.1 });
 
-        document.addEventListener('mousemove', e => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            cursor.style.left = mouseX + 'px';
-            cursor.style.top = mouseY + 'px';
-        });
+            document.querySelectorAll('.scroll-reveal').forEach(el => obs.observe(el));
 
-        function animateRing() {
-            ringX += (mouseX - ringX) * 0.12;
-            ringY += (mouseY - ringY) * 0.12;
-            ring.style.left = ringX + 'px';
-            ring.style.top = ringY + 'px';
-            requestAnimationFrame(animateRing);
-        }
-        animateRing();
-
-        document.querySelectorAll('a, button, [class*="btn"]').forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                cursor.style.width = '6px';
-                cursor.style.height = '6px';
-                ring.style.width = '60px';
-                ring.style.height = '60px';
-                ring.style.borderColor = 'rgba(234,88,12,0.8)';
-            });
-            el.addEventListener('mouseleave', () => {
-                cursor.style.width = '12px';
-                cursor.style.height = '12px';
-                ring.style.width = '40px';
-                ring.style.height = '40px';
-                ring.style.borderColor = 'rgba(234,88,12,0.5)';
-            });
-        });
-
-        // ——— SCROLL OBSERVER ———
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const delay = parseFloat(entry.target.style.transitionDelay) || 0;
+            // Form submit
+            const form = document.getElementById('contactForm');
+            const btn = document.getElementById('submitBtn');
+            if (form && btn) {
+                form.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    btn.innerHTML = 'Enviado com Sucesso! <iconify-icon icon="solar:check-circle-bold" class="text-lg"></iconify-icon>';
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    btn.classList.add('bg-green-600');
                     setTimeout(() => {
-                        entry.target.classList.add('visible');
-                    }, delay * 1000);
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
-        // ——— PROGRESS BAR ———
-        const progressBar = document.getElementById('progress-bar');
-        window.addEventListener('scroll', () => {
-            const scrolled = window.scrollY;
-            const total = document.documentElement.scrollHeight - window.innerHeight;
-            const pct = scrolled / total;
-            progressBar.style.transform = `scaleX(${pct})`;
+                        btn.innerHTML = 'Enviar Solicitação <iconify-icon icon="solar:arrow-right-linear" class="text-lg"></iconify-icon>';
+                        btn.classList.remove('bg-green-600');
+                        btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                        form.reset();
+                    }, 3000);
+                });
+            }
         });
-
-        // ——— MOBILE MENU ———
-        document.getElementById('mobileToggle').addEventListener('click', () => {
-            document.getElementById('mobileMenu').classList.add('open');
-        });
-        document.getElementById('mobileClose').addEventListener('click', () => {
-            document.getElementById('mobileMenu').classList.remove('open');
-        });
-        function closeMobile() {
-            document.getElementById('mobileMenu').classList.remove('open');
-        }
-
-        // ——— FORM SUBMISSION ———
-        document.getElementById('contactForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const btn = e.target.querySelector('button[type=submit]');
-            btn.innerHTML = 'Enviado com sucesso! <iconify-icon icon="solar:check-circle-bold"></iconify-icon>';
-            btn.style.background = 'var(--acid)';
-            btn.style.color = 'var(--bg)';
-            setTimeout(() => {
-                btn.innerHTML = 'Enviar Solicitação <iconify-icon icon="solar:arrow-right-linear"></iconify-icon>';
-                btn.style.background = '';
-                btn.style.color = '';
-                e.target.reset();
-            }, 3000);
-        });
-
-        // ——— SMOOTH SCROLL ———
-        document.querySelectorAll('a[href^="#"]').forEach(link => {
-            link.addEventListener('click', e => {
-                e.preventDefault();
-                const target = document.querySelector(link.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            });
-        });
-
-        // ——— NUMBER COUNTER ANIMATION ———
-        function animateCounter(el, target, suffix) {
-            let current = 0;
-            const step = target / 40;
-            const interval = setInterval(() => {
-                current = Math.min(current + step, target);
-                el.textContent = Math.floor(current) + suffix;
-                if (current >= target) clearInterval(interval);
-            }, 30);
-        }
-
-        // Observe counters
-        const counterObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.querySelectorAll('.stat-big span').forEach(span => {
-                        const text = span.textContent;
-                        const num = parseInt(text);
-                        if (!isNaN(num)) {
-                            animateCounter(span, num, '');
-                        }
-                    });
-                    counterObserver.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.5 });
-
-        document.querySelectorAll('.stat-big').forEach(el => {
-            counterObserver.observe(el.parentElement);
-        });
-
-        // Expose observer for loader to use
-        window._observer = observer;
     </script>
 </body>
 </html>
